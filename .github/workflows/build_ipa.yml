@@ -26,4 +26,16 @@ jobs:
       - name: Build IPA
         run: |
           # Запуск сборки без подписи (для Sideloadly/AltStore)
-          python3 build-system/Make/Make.py build --configuration release_arm64 --buildNumber 1
+          python3 build-system/Make/Make.py build \
+            --configurationPath=build-system/appstore-configuration.json \
+            --codesigningInformationPath=build-system/fake-codesigning \
+            --configuration=release_arm64 \
+            --buildNumber 1 \
+            --outputBuildArtifactsPath=build/artifacts
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Swiftgram-ipa
+          path: build/artifacts/
+          retention-days: 7
