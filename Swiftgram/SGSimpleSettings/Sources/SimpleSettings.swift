@@ -718,41 +718,6 @@ public class SGSimpleSettings {
     // MARK: Swiftgram — ghost mode: временное включение на время просмотра сторис (1.9)
     @UserDefault(key: Keys.ghostModeDisableOnStoryClose.rawValue)
     public var ghostModeDisableOnStoryClose: Bool
-}
-
-extension SGSimpleSettings {
-    public var isStealthModeEnabled: Bool {
-        return storyStealthMode && canUseStealthMode
-    }
-    
-    // MARK: Swiftgram — ghost mode: активен по главному флагу.
-    // ghostModeLocked не выключает режим — он лишь запрещает его выключение (как
-    // setGhostModeEnabled в AyuGram: под-тумблеры блокируются, а не инвертируются).
-    public var isGhostModeEnabled: Bool {
-        return ghostMode
-    }
-
-    // MARK: Swiftgram — ghost mode: главный тумблер переключает все под-тумблеры
-    // разом (mirrors GhostModeAccountSettings::setGhostModeEnabled в ayu_settings.cpp:138).
-    // Включение: скрыть всё. Выключение: вернуть отправку. ghostModeLocked запрещает
-    // выключение.
-    public func setGhostModeEnabled(_ enabled: Bool) {
-        if ghostModeLocked && ghostMode && !enabled {
-            return
-        }
-        ghostMode = enabled
-        if !ghostModeLocked {
-            ghostModeSendReadMessages = !enabled
-            ghostModeSendReadStories = !enabled
-            ghostModeSendOnlinePackets = !enabled
-            ghostModeSendUploadProgress = !enabled
-            ghostModeSendOfflinePacketAfterOnline = enabled
-        }
-    }
-    
-    public var ghostModeSendWithoutSoundEnum: GhostModeSendWithoutSound {
-        return GhostModeSendWithoutSound(rawValue: ghostModeSendWithoutSound) ?? .never
-    }
 
     // MARK: Swiftgram — anti-delete (AyuGram: ayu_settings.h:270-302)
     @UserDefault(key: Keys.saveDeletedMessages.rawValue)
@@ -772,12 +737,6 @@ extension SGSimpleSettings {
 
     @UserDefault(key: Keys.editedMark.rawValue)
     public var editedMark: String
-
-    // MARK: Swiftgram — anti-delete: сохранение сообщения по правилам AyuGram
-    // (telegram_helpers.cpp:714-725 isMessageSavable: saveDeletedMessages && (!isBot || saveForBots))
-    public func isMessageSavable(_ peerIsBot: Bool) -> Bool {
-        return saveDeletedMessages && (!peerIsBot || saveForBots)
-    }
 
     // MARK: Swiftgram — spy
     @UserDefault(key: Keys.spyMessageRead.rawValue)
@@ -831,6 +790,47 @@ extension SGSimpleSettings {
 
     @UserDefault(key: Keys.regexFiltersData.rawValue)
     public var regexFiltersData: Data
+}
+
+extension SGSimpleSettings {
+    public var isStealthModeEnabled: Bool {
+        return storyStealthMode && canUseStealthMode
+    }
+    
+    // MARK: Swiftgram — ghost mode: активен по главному флагу.
+    // ghostModeLocked не выключает режим — он лишь запрещает его выключение (как
+    // setGhostModeEnabled в AyuGram: под-тумблеры блокируются, а не инвертируются).
+    public var isGhostModeEnabled: Bool {
+        return ghostMode
+    }
+
+    // MARK: Swiftgram — ghost mode: главный тумблер переключает все под-тумблеры
+    // разом (mirrors GhostModeAccountSettings::setGhostModeEnabled в ayu_settings.cpp:138).
+    // Включение: скрыть всё. Выключение: вернуть отправку. ghostModeLocked запрещает
+    // выключение.
+    public func setGhostModeEnabled(_ enabled: Bool) {
+        if ghostModeLocked && ghostMode && !enabled {
+            return
+        }
+        ghostMode = enabled
+        if !ghostModeLocked {
+            ghostModeSendReadMessages = !enabled
+            ghostModeSendReadStories = !enabled
+            ghostModeSendOnlinePackets = !enabled
+            ghostModeSendUploadProgress = !enabled
+            ghostModeSendOfflinePacketAfterOnline = enabled
+        }
+    }
+    
+    public var ghostModeSendWithoutSoundEnum: GhostModeSendWithoutSound {
+        return GhostModeSendWithoutSound(rawValue: ghostModeSendWithoutSound) ?? .never
+    }
+
+    // MARK: Swiftgram — anti-delete: сохранение сообщения по правилам AyuGram
+    // (telegram_helpers.cpp:714-725 isMessageSavable: saveDeletedMessages && (!isBot || saveForBots))
+    public func isMessageSavable(_ peerIsBot: Bool) -> Bool {
+        return saveDeletedMessages && (!peerIsBot || saveForBots)
+    }
 
     public var regexFilters: [SGRegexFilter] {
         get {
