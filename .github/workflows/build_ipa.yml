@@ -23,6 +23,15 @@ jobs:
           brew install cmake ninja
           python3 -m pip install --break-system-packages cmake-format
 
+      - name: Regenerate fake provisioning profiles for our bundle id
+        run: |
+          python3 build-system/Make/GenerateSwiftgramProfiles.py \
+            --team-id C67CF9S4VU \
+            --bundle-id com.neymarynight.ayugram \
+            --input-dir build-system/fake-codesigning/profiles \
+            --output-dir build-system/fake-codesigning/profiles \
+            --certs-dir build-system/fake-codesigning/certs
+
       - name: Build IPA
         run: |
           # Запуск сборки без подписи (для Sideloadly/AltStore)
