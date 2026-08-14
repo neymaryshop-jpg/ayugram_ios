@@ -1,0 +1,28 @@
+name: Build Telegram iOS IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
+
+      - name: Install dependencies
+        run: |
+          brew install bazel cmake ninja
+          pip3 install cmake-format
+
+      - name: Build IPA
+        run: |
+          # Запуск сборки без подписи (для Sideloadly/AltStore)
+          python3 build-system/Make/Make.py --configuration release build
