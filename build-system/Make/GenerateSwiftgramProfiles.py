@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import sys
 import tempfile
@@ -42,6 +43,11 @@ def rewrite_and_resign(source, destination, team_id, bundle_id, old_bundle_id, k
     print('Rewrote {} -> {}'.format(current_appid, new_appid))
 
     run_executable_with_output('plutil', arguments=['-replace', 'Entitlements.application-identifier', '-string', new_appid, parsed_plist_file], check_result=True)
+    app_groups_json = run_executable_with_output('plutil', arguments=['-extract', r'Entitlements.com\.apple\.security\.application-groups', '-json', parsed_plist_file], check_result=False)
+    if app_groups_json is not None:
+        app_groups = json.loads(app_groups_json.strip())
+        new_app_groups = [g.replace('group.' + old_bundle_id, 'group.' + bundle_id) for g in app_groups]
+        run_executable_with_output('plutil', arguments=['-replace', r'Entitlements.com\.apple\.security\.application-groups', '-json', json.dumps(new_app_groups), parsed_plist_file], check_result=True)
     run_executable_with_output('plutil', arguments=['-remove', 'DER-Encoded-Profile', parsed_plist_file], check_result=False)
 
     run_executable_with_output('security', arguments=[
