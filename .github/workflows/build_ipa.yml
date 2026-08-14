@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           brew unlink bazelisk 2>/dev/null || true
-          brew install cmake ninja
+          brew install cmake ninja pkg-config
           python3 -m pip install --break-system-packages cmake-format
 
       - name: Regenerate fake provisioning profiles for our bundle id
