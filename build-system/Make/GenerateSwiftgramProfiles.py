@@ -30,6 +30,7 @@ def rewrite_and_resign(source, destination, team_id, bundle_id, old_bundle_id, k
     if current_appid is None:
         print('No application-identifier in {}'.format(source))
         sys.exit(1)
+    current_appid = current_appid.strip()
 
     prefix = team_id + '.' + old_bundle_id
     if not current_appid.startswith(prefix):
