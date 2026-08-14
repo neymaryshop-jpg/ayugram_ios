@@ -19,7 +19,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install bazel cmake ninja
+          brew unlink bazelisk 2>/dev/null || true
+          brew install cmake ninja
           pip3 install cmake-format
 
       - name: Build IPA
