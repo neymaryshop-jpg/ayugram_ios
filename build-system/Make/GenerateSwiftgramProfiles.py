@@ -10,12 +10,13 @@ from GenerateProfiles import setup_temp_keychain, cleanup_temp_keychain
 
 
 def get_identity_from_keychain(keychain_name):
-    output = run_executable_with_output('security', arguments=['find-identity', '-v', '-p', 'codesigning', keychain_name], check_result=True)
-    if output is None:
-        return None
-    for line in output.splitlines():
-        if '"' in line and ')' in line:
-            return line.split('"')[1]
+    for flags in (['-v', '-p', 'codesigning'], []):
+        output = run_executable_with_output('security', arguments=['find-identity'] + flags + [keychain_name], check_result=True)
+        if output is None:
+            continue
+        for line in output.splitlines():
+            if '"' in line and ')' in line:
+                return line.split('"')[1]
     return None
 
 
