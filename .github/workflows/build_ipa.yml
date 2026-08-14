@@ -26,4 +26,4 @@ jobs:
       - name: Build IPA
         run: |
           # Запуск сборки без подписи (для Sideloadly/AltStore)
-          python3 build-system/Make/Make.py --configuration release build
+          python3 build-system/Make/Make.py build --configuration release_arm64 --buildNumber 1
