@@ -20,7 +20,7 @@ def get_identity_from_keychain(keychain_name):
     return None
 
 
-def rewrite_and_resign(source, destination, team_id, bundle_id, keychain_name, signing_identity):
+def rewrite_and_resign(source, destination, team_id, bundle_id, old_bundle_id, keychain_name, signing_identity):
     parsed_plist = run_executable_with_output('security', arguments=['cms', '-D', '-i', source], check_result=True)
     parsed_plist_file = tempfile.mktemp()
     with open(parsed_plist_file, 'w+') as file:
@@ -31,13 +31,12 @@ def rewrite_and_resign(source, destination, team_id, bundle_id, keychain_name, s
         print('No application-identifier in {}'.format(source))
         sys.exit(1)
 
-    if not current_appid.startswith(team_id + '.'):
+    prefix = team_id + '.' + old_bundle_id
+    if not current_appid.startswith(prefix):
         print('Unexpected application-identifier {} in {}'.format(current_appid, source))
         sys.exit(1)
 
-    base_name = current_appid[len(team_id + '.'):]
-    dot_index = base_name.find('.')
-    suffix = base_name[dot_index:] if dot_index != -1 else ''
+    suffix = current_appid[len(prefix):]
     new_appid = team_id + '.' + bundle_id + suffix
     print('Rewrote {} -> {}'.format(current_appid, new_appid))
 
@@ -55,6 +54,7 @@ def main():
     parser = argparse.ArgumentParser(prog='GenerateSwiftgramProfiles')
     parser.add_argument('--team-id', required=True)
     parser.add_argument('--bundle-id', required=True)
+    parser.add_argument('--old-bundle-id', required=True)
     parser.add_argument('--input-dir', required=True)
     parser.add_argument('--output-dir', required=True)
     parser.add_argument('--certs-dir', required=True)
@@ -87,6 +87,7 @@ def main():
                 destination=destination,
                 team_id=args.team_id,
                 bundle_id=args.bundle_id,
+                old_bundle_id=args.old_bundle_id,
                 keychain_name=keychain_name,
                 signing_identity=signing_identity
             )

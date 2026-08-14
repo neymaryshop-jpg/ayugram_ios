@@ -28,6 +28,7 @@ jobs:
           python3 build-system/Make/GenerateSwiftgramProfiles.py \
             --team-id C67CF9S4VU \
             --bundle-id com.neymarynight.ayugram \
+            --old-bundle-id ph.telegra.Telegraph \
             --input-dir build-system/fake-codesigning/profiles \
             --output-dir build-system/fake-codesigning/profiles \
             --certs-dir build-system/fake-codesigning/certs
