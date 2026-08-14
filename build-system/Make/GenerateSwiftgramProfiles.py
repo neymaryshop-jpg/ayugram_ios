@@ -1,6 +1,6 @@
 import argparse
-import json
 import os
+import plistlib
 import sys
 import tempfile
 
@@ -43,11 +43,18 @@ def rewrite_and_resign(source, destination, team_id, bundle_id, old_bundle_id, k
     print('Rewrote {} -> {}'.format(current_appid, new_appid))
 
     run_executable_with_output('plutil', arguments=['-replace', 'Entitlements.application-identifier', '-string', new_appid, parsed_plist_file], check_result=True)
-    app_groups_json = run_executable_with_output('plutil', arguments=['-extract', r'Entitlements.com\.apple\.security\.application-groups', '-json', parsed_plist_file], check_result=False)
-    if app_groups_json is not None:
-        app_groups = json.loads(app_groups_json.strip())
-        new_app_groups = [g.replace('group.' + old_bundle_id, 'group.' + bundle_id) for g in app_groups]
-        run_executable_with_output('plutil', arguments=['-replace', r'Entitlements.com\.apple\.security\.application-groups', '-json', json.dumps(new_app_groups), parsed_plist_file], check_result=True)
+
+    with open(parsed_plist_file, 'rb') as file:
+        parsed_dict = plistlib.load(file)
+    entitlements = parsed_dict.get('Entitlements')
+    if entitlements is not None and 'com.apple.security.application-groups' in entitlements:
+        entitlements['com.apple.security.application-groups'] = [
+            g.replace('group.' + old_bundle_id, 'group.' + bundle_id) for g in entitlements['com.apple.security.application-groups']
+        ]
+        print('Rewrote app groups in {}: {}'.format(os.path.basename(source), ', '.join(entitlements['com.apple.security.application-groups'])))
+        with open(parsed_plist_file, 'wb') as file:
+            plistlib.dump(parsed_dict, file)
+
     run_executable_with_output('plutil', arguments=['-remove', 'DER-Encoded-Profile', parsed_plist_file], check_result=False)
 
     run_executable_with_output('security', arguments=[
