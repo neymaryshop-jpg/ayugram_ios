@@ -6,7 +6,17 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from BuildEnvironment import run_executable_with_output
-from GenerateProfiles import setup_temp_keychain, cleanup_temp_keychain, get_signing_identity_from_p12, get_certificate_base64_from_p12
+from GenerateProfiles import setup_temp_keychain, cleanup_temp_keychain
+
+
+def get_identity_from_keychain(keychain_name):
+    output = run_executable_with_output('security', arguments=['find-identity', '-v', '-p', 'codesigning', keychain_name], check_result=True)
+    if output is None:
+        return None
+    for line in output.splitlines():
+        if '"' in line and ')' in line:
+            return line.split('"')[1]
+    return None
 
 
 def rewrite_and_resign(source, destination, team_id, bundle_id, keychain_name, signing_identity):
@@ -57,13 +67,13 @@ def main():
         print('{} does not exist'.format(p12_path))
         sys.exit(1)
 
-    signing_identity = get_signing_identity_from_p12(p12_path, '')
+    keychain_name = setup_temp_keychain(p12_path, '')
+    signing_identity = get_identity_from_keychain(keychain_name)
     if not signing_identity:
-        print('Could not extract signing identity from {}'.format(p12_path))
+        print('Could not extract signing identity from keychain {}'.format(keychain_name))
         sys.exit(1)
     print('Using signing identity: {}'.format(signing_identity))
 
-    keychain_name = setup_temp_keychain(p12_path, '')
     try:
         for file_name in os.listdir(args.input_dir):
             if not file_name.endswith('.mobileprovision'):
