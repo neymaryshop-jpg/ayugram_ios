@@ -69,7 +69,7 @@ public final class SGMessageShotPreviewController: ViewController {
     public override func containerLayoutUpdated(_ layout: ContainerViewLayout, transition: ContainedViewLayoutTransition) {
         super.containerLayoutUpdated(layout, transition: transition)
 
-        guard let node = self.displayNode as? ASDisplayNode, let imageNode = self.imageNode else {
+        guard let imageNode = self.imageNode else {
             return
         }
 
