@@ -3,6 +3,7 @@ import Postbox
 import TelegramApi
 import SwiftSignalKit
 import Emoji
+import SGSimpleSettings
 
 public enum EnqueueMessageGrouping {
     case none
