@@ -46,7 +46,6 @@ jobs:
             --codesigningInformationPath=build-system/fake-codesigning \
             --configuration=release_arm64 \
             --buildNumber 1 \
-            --disableExtensions \
             --outputBuildArtifactsPath=build/artifacts
 
       - name: Upload IPA
