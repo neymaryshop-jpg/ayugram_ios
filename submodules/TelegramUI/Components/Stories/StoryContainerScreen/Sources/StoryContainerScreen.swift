@@ -1,6 +1,7 @@
 // MARK: Swiftgram
 import TelegramUIPreferences
 import SGSimpleSettings
+import SGStrings
 
 import Foundation
 import UIKit
