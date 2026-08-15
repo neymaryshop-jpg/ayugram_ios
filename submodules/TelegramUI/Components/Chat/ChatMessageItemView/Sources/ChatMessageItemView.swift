@@ -727,7 +727,7 @@ open class ChatMessageItemView: ListViewItemNode, ChatMessageItemNodeProtocol {
             return
         }
         let isChannel: Bool
-        if let peer = item.message.peers[peerId], case let .channel(channel) = peer, case .broadcast = channel.info {
+        if let channel = item.message.peers[peerId] as? TelegramChannel, case .broadcast = channel.info {
             isChannel = true
         } else {
             isChannel = false
