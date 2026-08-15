@@ -2095,7 +2095,7 @@ private func sgWrappedTranslateMultiple(
     toLang: String,
     `default`: Signal<[(String, [MessageTextEntity])], TranslationError>
 ) -> Signal<[(String, [MessageTextEntity])], TranslationError> {
-    if let firstText = texts.first?.0, let backendSignal = sgTranslateWithBackend(text: firstText, toLang: toLang) {
+    if texts.first?.0 != nil, sgTranslateWithBackend(text: texts.first!.0, toLang: toLang) != nil {
         let translatedSignals: [Signal<(String, [MessageTextEntity]), TranslationError>] = texts.compactMap { (text, _) in
             guard let signal = sgTranslateWithBackend(text: text, toLang: toLang) else {
                 return nil
