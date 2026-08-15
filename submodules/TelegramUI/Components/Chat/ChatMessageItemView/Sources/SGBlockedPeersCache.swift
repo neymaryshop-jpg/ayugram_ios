@@ -2,6 +2,7 @@ import Foundation
 import TelegramCore
 import Postbox
 import SwiftSignalKit
+import AccountContext
 
 // Swiftgram — кэш заблокированных пиров для hideFromBlocked
 // (AyuGram: FiltersController::isBlocked, filters_controller.cpp)
@@ -21,7 +22,7 @@ public final class SGFiltersBlockedPeers {
         if !self.initializedAccountIds.contains(accountId) {
             self.initializedAccountIds.insert(accountId)
             self.contexts[accountId] = context
-            let blockedContext = BlockedPeersContext(account: context.account, subject: .contacts)
+            let blockedContext = BlockedPeersContext(account: context.account, subject: .blocked)
             let disposable = blockedContext.state.start(next: { [weak self] state in
                 var ids = Set<Int64>()
                 for peer in state.peers {
