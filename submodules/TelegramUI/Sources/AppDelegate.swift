@@ -340,6 +340,8 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
         precondition(!testIsLaunched)
         testIsLaunched = true
         
+        SGCrashHandler.shared.install()
+        
         let _ = voipTokenPromise.get().start(next: { token in
             self.voipDeviceToken.set(.single(token))
         })
@@ -673,6 +675,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
             try? FileManager.default.createDirectory(at: fallbackUrl, withIntermediateDirectories: true, attributes: nil)
             appGroupUrl = fallbackUrl
         }
+        SGCrashHandler.shared.logLaunch("app group \(appGroupName): \(appGroupUrl.path)")
         
         var isDebugConfiguration = false
         #if DEBUG
@@ -806,6 +809,15 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
         GlobalExperimentalSettings.enableFeed = false
         
         self.window?.makeKeyAndVisible()
+        SGCrashHandler.shared.logLaunch("window made visible")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { [weak self] in
+            guard let self, let crashReport = SGCrashHandler.shared.unreadCrashReport() else {
+                return
+            }
+            let alertController = UIAlertController(title: "Crash Report", message: crashReport, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.mainWindow?.presentNative(alertController)
+        }
         
         var hasActiveCalls: Signal<Bool, NoError> = .single(false)
         if CallKitIntegration.isAvailable, let callKitIntegration = CallKitIntegration.shared {
@@ -2088,6 +2100,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        SGCrashHandler.shared.logLaunch("did become active")
         self.isInForegroundValue = true
         self.isInForegroundPromise.set(true)
         self.isActiveValue = true

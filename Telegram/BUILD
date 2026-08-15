@@ -1748,6 +1748,10 @@ plist_fragment(
     <string>????</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
+    <key>UIFileSharingEnabled</key>
+    <true/>
     <key>LSApplicationQueriesSchemes</key>
     <array>
         <string>instagram</string>
