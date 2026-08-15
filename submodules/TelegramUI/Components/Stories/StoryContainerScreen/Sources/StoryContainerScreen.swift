@@ -2032,9 +2032,9 @@ private final class StoryContainerScreenComponent: Component {
                             strings: environment.strings,
                             peer: component.content.stateValue?.slice?.peer,
                             isInStealthMode: false,
-                            title: i18n("Ghost.SuggestStory.Title", component.strings.baseLanguageCode),
-                            description: i18n("Ghost.SuggestStory.Notice", component.strings.baseLanguageCode),
-                            actionTitle: i18n("Ghost.SuggestStory.Enable", component.strings.baseLanguageCode),
+                            title: i18n("Ghost.SuggestStory.Title", environment.strings.baseLanguageCode),
+                            description: i18n("Ghost.SuggestStory.Notice", environment.strings.baseLanguageCode),
+                            actionTitle: i18n("Ghost.SuggestStory.Enable", environment.strings.baseLanguageCode),
                             action: { [weak self] in
                                 guard let self else {
                                     return
